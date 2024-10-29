@@ -1,0 +1,513 @@
+app:
+  description: Based on the BOOK, ask patients questions and collect their responses.
+    Generate a story based on all the responses
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: Story Telling Guide
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.2
+workflow:
+  conversation_variables:
+  - description: 用户的回答
+    id: 27b3f0cb-11cb-4344-8d5c-7971b513a5be
+    name: history
+    value: []
+    value_type: array[string]
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - remote_url
+        - local_file
+      number_limits: 3
+    opening_statement: Hello! I am here to listen to your story and give mental  support.
+      Here, we will have a relaxed conversation and collect your basic information.
+      I will ask you one question at a time until I have all the information I want
+      to know. Afterwards, I will encourage you to share your story and help you revise
+      it to make it more authentic and encouraging. Please feel free to relax and
+      start our communication! May i ask your name firstly?
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      configs: []
+      enabled: false
+      type: ''
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: start-knowledge_retrieval
+      selected: false
+      source: start
+      sourceHandle: source
+      target: knowledge_retrieval
+      targetHandle: target
+      type: custom
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1730141068510-source-1730142426315-target
+      selected: false
+      source: '1730141068510'
+      sourceHandle: source
+      target: '1730142426315'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: knowledge-retrieval
+        targetType: if-else
+      id: knowledge_retrieval-source-1730140934598-target
+      source: knowledge_retrieval
+      sourceHandle: source
+      target: '1730140934598'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1730140934598-true-llm-target
+      source: '1730140934598'
+      sourceHandle: 'true'
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1730140934598-false-1730141068510-target
+      source: '1730140934598'
+      sourceHandle: 'false'
+      target: '1730141068510'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: llm-source-answer-target
+      source: llm
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: assigner
+      id: llm-source-1730141407270-target
+      source: llm
+      sourceHandle: source
+      target: '1730141407270'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: START
+        type: start
+        variables:
+        - label: user
+          max_length: 500
+          options: []
+          required: true
+          type: paragraph
+          variable: user
+      height: 90
+      id: start
+      position:
+        x: -352.99999999999966
+        y: 296
+      positionAbsolute:
+        x: -352.99999999999966
+        y: 296
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - c93e57a7-b113-4a71-a2c8-088cb2e5c3bf
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_model: null
+          score_threshold: null
+          top_k: 4
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        single_retrieval_config: null
+        title: KNOWLEDGE RETRIEVAL
+        type: knowledge-retrieval
+      height: 92
+      id: knowledge_retrieval
+      position:
+        x: 70.00000000000023
+        y: 296
+      positionAbsolute:
+        x: 70.00000000000023
+        y: 296
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - knowledge_retrieval
+          - result
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+        model:
+          completion_params:
+            stop: []
+          mode: chat
+          name: meta-llama/Meta-Llama-3.1-70B-Instruct
+          provider: siliconflow
+        prompt_template:
+        - id: 003d1d1a-9ee0-44c5-a9f9-ce34a756cb99
+          role: system
+          text: "Use the following context as your learned knowledge, inside <context></context>\
+            \ XML tags.\n\n<context>\n{{#context#}}\n</context>\n\nWhen answer to\
+            \ user:\n- If you don't know, just say that you don't know.\n- If you\
+            \ don't know when you are not sure, ask for clarification.\nAvoid mentioning\
+            \ that you obtained the information from the context.\nAnd answer according\
+            \ to the language of the user's question.\n\n```xml\n<instruction>\n1.\
+            \ Parses the patient's information from{{#start.user#}}, including name,\
+            \ gender, age, and disease type. Then you double confirm these information\
+            \ to the patient by one sentence.\n2. Ask one question at a time until\
+            \ you have all the information you want to know.\n3. After all information\
+            \ is obtained, encourage the patient to share their story.\n4. Based on\
+            \ the guidance of the context, continue to guide patients to modify their\
+            \ stories to make them true and encouraging. In this process, use encouraging\
+            \ language and do not refute the patients’ words.\n5. When you feel that\
+            \ the patient's story meets the requirements, compile the patient's story\
+            \ into one and send it to the patient for confirmation. Otherwise, keep\
+            \ asking questions to help the patient improve the story.\n5. The output\
+            \ should not contain any XML tags.\n\n<encouragement>\n    <encourage_story>Thank\
+            \ you for sharing your information! Now, can you share your story with\
+            \ me?</encourage_story>\n    <guide_story>Your story is very moving, can\
+            \ you describe in more detail the emotions you felt during this process?</guide_story>\n\
+            </encouragement>\n</instruction>\n```\n"
+        selected: false
+        title: LLM
+        type: llm
+        vision:
+          configs: null
+          enabled: false
+          variable_selector: null
+      height: 98
+      id: llm
+      position:
+        x: 829.1962086557373
+        y: 250.00000000000006
+      positionAbsolute:
+        x: 829.1962086557373
+        y: 250.00000000000006
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#llm.text#}}'
+        selected: false
+        title: ANSWER
+        type: answer
+      height: 102
+      id: answer
+      position:
+        x: 1271.852464547978
+        y: 159.29862036575418
+      positionAbsolute:
+        x: 1271.852464547978
+        y: 159.29862036575418
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: ≤
+            id: a04ecbae-0791-44d1-968a-f151eab921ed
+            value: '5'
+            varType: number
+            variable_selector:
+            - sys
+            - dialogue_count
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 126
+      id: '1730140934598'
+      position:
+        x: 554.0467529926332
+        y: 398
+      positionAbsolute:
+        x: 554.0467529926332
+        y: 398
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - knowledge_retrieval
+          - result
+        desc: ''
+        memory:
+          query_prompt_template: ''
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 67
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: meta-llama/Meta-Llama-3.1-70B-Instruct
+          provider: siliconflow
+        prompt_template:
+        - id: fa9ec037-7438-441c-a2e2-aacb029ad9f8
+          role: system
+          text: "```xml\n<context>\n{{#context#}}\n</context>\n<instruction>\n   \
+            \ <instructions>\n       1.Based on the provided user information {{#start.user#}}\
+            \ (including name, age, gender, type of illness, and time of diagnosis)\
+            \ and chat history {{#conversation.history#}}, compile the patient's story\
+            \ into one and send it to the patient for confirmation. \n2. Integrate\
+            \ the user’s personal background and conversation with the chatbot to\
+            \ ensure the story has coherence and emotional depth.\n3. In the story,\
+            \ highlight the patients’ courage, challenges, and hopes, and show their\
+            \ journey in the fight against cancer.\n4. Try to integrate the story\
+            \ using the timeline as a clue to ensure that the language of the story\
+            \ is natural and smooth. Do not add unnecessary content without authorization\
+            \ and avoid using any XML tags.\n5. Stories should include the patient’s\
+            \ feelings, experiences, and interactions with others (such as family,\
+            \ friends, or health care professionals).\n6. Finally, make sure the story\
+            \ has a positive ending that conveys a message of hope and strength.\n\
+            \    </instructions>\n```"
+        selected: false
+        title: LLM 2
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: '1730141068510'
+      position:
+        x: 816.13027672773
+        y: 673.0742779245994
+      positionAbsolute:
+        x: 816.13027672773
+        y: 673.0742779245994
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        assigned_variable_selector:
+        - conversation
+        - history
+        desc: ''
+        input_variable_selector:
+        - sys
+        - query
+        selected: false
+        title: 变量赋值
+        type: assigner
+        write_mode: append
+      height: 132
+      id: '1730141407270'
+      position:
+        x: 1206.1999999999998
+        y: 398
+      positionAbsolute:
+        x: 1206.1999999999998
+        y: 398
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: Dify
+        desc: ''
+        height: 298
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"","text":"故事生成prompt：","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"你是一个文本生成器，你根据癌症患者和chatbot的聊天历史生成一个癌症患者自己的抗癌故事。你根据{user}中的用户信息（包括姓名，年龄，性别，疾病种类和确诊时间）和{history}参数（患者和chatbot的聊天历史）整合成一个流畅的故事","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Use
+          the following context as your learned knowledge, inside <context></context>
+          XML tags.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"<context>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"</context>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"When
+          answer to user:","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"-
+          If you don''t know, just say that you don''t know.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"-
+          If you don''t know when you are not sure, ask for clarification.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Avoid
+          mentioning that you obtained the information from the context.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"And
+          answer according to the language of the user''s question.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"```xml","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"<instruction>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"1.
+          Parses the patient''s information from","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":",
+          including name, gender, age, and disease type. Then you confirm it to the
+          patient.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"2.
+          Ask one question at a time until you have all the information you want to
+          know.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"3.
+          After all information is obtained, encourage the patient to share their
+          story.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"4.
+          Based on the guidance of the context, continue to guide patients to modify
+          their stories to make them true and encouraging. In this process, use encouraging
+          language and do not refute the patients’ words.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"5.
+          When you feel that the patient''s story meets the requirements, compile
+          the patient''s story into one and send it to the patient for confirmation.
+          Otherwise, keep asking questions to help the patient improve the story.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"5.
+          The output should not contain any XML tags.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"<encouragement>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    <encourage_story>Thank
+          you for sharing your information! Now, can you share your story with me?</encourage_story>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    <guide_story>Your
+          story is very moving, can you describe in more detail the emotions you felt
+          during this process?</guide_story>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"</encouragement>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"</instruction>","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"```","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 455
+      height: 298
+      id: '1730142309836'
+      position:
+        x: 693.8392781290189
+        y: 843.1019922248184
+      positionAbsolute:
+        x: 693.8392781290189
+        y: 843.1019922248184
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 455
+    - data:
+        answer: I summarized the previous chat between us and generated a story. Do
+          you want to hear your exclusive story? Let me tell you:：{{#1730141068510.text#}}
+        desc: ''
+        selected: false
+        title: 直接回复 2
+        type: answer
+        variables: []
+      height: 166
+      id: '1730142426315'
+      position:
+        x: 1181.7962312257785
+        y: 743.228029208786
+      positionAbsolute:
+        x: 1181.7962312257785
+        y: 743.228029208786
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: Dify
+        desc: ''
+        height: 241
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"输入：","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"用户信息user","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"[{\"email\":\"user@example.com\",\"password\":\"ussh\",\"name\":\"John
+          Doe\",\"age\":30,\"gender\":\"male\",\"disease\":{\"type\":\"chest cancer\",\"diagnosis_year\":2018}}]","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 300
+      height: 241
+      id: '1730142520183'
+      position:
+        x: -21.214673273938445
+        y: 521.706977063106
+      positionAbsolute:
+        x: -21.214673273938445
+        y: 521.706977063106
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 300
+    - data:
+        author: Dify
+        desc: ''
+        height: 182
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"","text":"test
+          input：","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"When
+          I was diagnosed, I felt despair and embarrassment, partly because I was
+          afraid of dying and partly because breast cancer is relatively rare in men
+          and I didn''t know how to mention that I had such a disease","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 303
+      height: 182
+      id: '1730148837396'
+      position:
+        x: 816.13027672773
+        y: 16.09219129111321
+      positionAbsolute:
+        x: 816.13027672773
+        y: 16.09219129111321
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 303
+    viewport:
+      x: 267.2683720304891
+      y: 61.002992925310195
+      zoom: 0.8894817905006213

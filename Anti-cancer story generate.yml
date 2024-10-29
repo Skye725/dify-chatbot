@@ -1,0 +1,547 @@
+app:
+  description: Generate encouraging stories based on the patient's age, gender, and
+    disease type. Push based on the patient’s current condition
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: Anti-cancer story generate
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.2
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: llm
+      id: 1716783101349-source-1716783205923-target
+      source: '1716783101349'
+      sourceHandle: source
+      target: '1716783205923'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: iteration
+        targetType: code
+      id: 1716786291494-source-1716786321875-target
+      source: '1716786291494'
+      sourceHandle: source
+      target: '1716786321875'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: answer
+      id: 1716786321875-source-1716786344896-target
+      source: '1716786321875'
+      sourceHandle: source
+      target: '1716786344896'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        iteration_id: '1716786291494'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1716786291494start0-source-1716805725916-target
+      source: 1716786291494start0
+      sourceHandle: source
+      target: '1716805725916'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: code
+      id: 1716783205923-source-1716783405935-target
+      source: '1716783205923'
+      sourceHandle: source
+      target: '1716783405935'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: iteration
+      id: 1716783405935-source-1716786291494-target
+      source: '1716783405935'
+      sourceHandle: source
+      target: '1716786291494'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - custom
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          label: user
+          max_length: 1000
+          options: []
+          required: true
+          type: paragraph
+          variable: user
+      height: 90
+      id: '1716783101349'
+      position:
+        x: 31.064730563068963
+        y: 330.5
+      positionAbsolute:
+        x: 31.064730563068963
+        y: 330.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1716783101349'
+          - user
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: meta-llama/Meta-Llama-3.1-70B-Instruct
+          provider: siliconflow
+        prompt_template:
+        - id: 872364eb-6859-4011-b830-e9d547b2a2b4
+          role: system
+          text: "```xml\n<instruction>\n  <instructions>\n    You are a virtual assistant\
+            \ tasked with creating an inspiring cancer story based on the basic information\
+            \ of a cancer patient. Follow these steps to complete the task:\n    1.\
+            \ Parse the {{#1716783101349.user#}} variable to extract the patient's\
+            \ name, age, gender, and disease information.\n    2. Create a fictional\
+            \ character who faces a similar situation to the patient but has a different\
+            \ name. Ensure that this character's journey is relatable and inspiring.\n\
+            \    3. Generate a compelling title for the story that captures the essence\
+            \ of the character's journey.\n    4. Create at least one subtitle that\
+            \ provides additional context or highlights a key theme of the story.\n\
+            \    5. Structure the story into sections, each with a clear title and\
+            \ detailed bullet points that outline the content of that section.\n \
+            \   6. Ensure that each section flows smoothly into the next, maintaining\
+            \ a coherent narrative throughout the story.\n    7. The output should\
+            \ be a JSON array containing objects with \"section\" and \"bullets\"\
+            \ keys, detailing the story's structure. \n    8. Do not include any XML\
+            \ tags in the output.\n  </instructions>\n  \n  <examples>\n    <example>\n\
+            \      <input>\n        [{\"email\":\"user@example.com\",\"password\"\
+            :\"ussh\",\"name\":\"John Doe\",\"age\":30,\"gender\":\"male\",\"disease\"\
+            :{\"type\":\"cancer\",\"diagnosis_year\":2020}}]\n      </input>\n   \
+            \   <output>\n        [\n          {\n            \"section\": \"The Day\
+            \ Everything Changed\",\n            \"bullets\": \"Detailed account of\
+            \ Alex’s reaction to the diagnosis: initial shock, fear, and the emotional\
+            \ toll on him and his family.\"\n          },\n          {\n         \
+            \   \"section\": \"The Fight Begins: Starting Treatment\",\n         \
+            \   \"bullets\": \"Alex’s first days of treatment: understanding the process,\
+            \ meeting doctors, and the challenges he faces physically and emotionally.\"\
+            \n          }\n        ]\n      </output>\n    </example>\n    \n    <example>\n\
+            \      <input>\n        [{\"email\":\"user@example.com\",\"password\"\
+            :\"ussh\",\"name\":\"Jane Smith\",\"age\":45,\"gender\":\"female\",\"\
+            disease\":{\"type\":\"breast cancer\",\"diagnosis_year\":2019}}]\n   \
+            \   </input>\n      <output>\n        [\n          {\n            \"section\"\
+            : \"A New Chapter: The Diagnosis\",\n            \"bullets\": \"Narrative\
+            \ of Sarah’s initial response to her breast cancer diagnosis and the impact\
+            \ on her family.\"\n          },\n          {\n            \"section\"\
+            : \"Finding Strength: The Treatment Journey\",\n            \"bullets\"\
+            : \"Sarah’s experiences during chemotherapy: the physical and emotional\
+            \ challenges she faces and how she finds support.\"\n          }\n   \
+            \     ]\n      </output>\n    </example>\n    \n    <example>\n      <input>\n\
+            \        [{\"email\":\"user@example.com\",\"password\":\"ussh\",\"name\"\
+            :\"Michael Brown\",\"age\":50,\"gender\":\"male\",\"disease\":{\"type\"\
+            :\"lung cancer\",\"diagnosis_year\":2021}}]\n      </input>\n      <output>\n\
+            \        [\n          {\n            \"section\": \"The Moment of Truth\"\
+            ,\n            \"bullets\": \"Exploration of David’s feelings upon receiving\
+            \ his lung cancer diagnosis and the subsequent changes in his life.\"\n\
+            \          },\n          {\n            \"section\": \"The Battle Ahead:\
+            \ Embracing Treatment\",\n            \"bullets\": \"David’s journey through\
+            \ treatment: the ups and downs, the support from loved ones, and his determination\
+            \ to fight.\"\n          }\n        ]\n      </output>\n    </example>\n\
+            \  </examples>\n</instruction>\n```"
+        selected: false
+        title: 生成段落标题和段落内容
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 98
+      id: '1716783205923'
+      position:
+        x: 334
+        y: 330.5
+      positionAbsolute:
+        x: 334
+        y: 330.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(arg1: str) -> dict:\n    import json\n    data = json.loads(arg1)\n\
+          \    \n    # Create an array of objects\n    result = [{'section': item[\"\
+          section\"], 'bullets': item[\"bullets\"]} for item in data]\n    \n    return\
+          \ {\n        'result': result\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: array[object]
+        selected: false
+        title: 提取段落标题和段落内容
+        type: code
+        variables:
+        - value_selector:
+          - '1716783205923'
+          - text
+          variable: arg1
+      height: 54
+      id: '1716783405935'
+      position:
+        x: 638
+        y: 330.5
+      positionAbsolute:
+        x: 638
+        y: 330.5
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 一段一段生成长篇故事
+        height: 261
+        iterator_selector:
+        - '1716783405935'
+        - result
+        output_selector:
+        - '1716805725916'
+        - text
+        output_type: array[string]
+        selected: false
+        startNodeType: llm
+        start_node_id: 1716786291494start0
+        title: 迭代
+        type: iteration
+        width: 446
+      height: 261
+      id: '1716786291494'
+      position:
+        x: 942
+        y: 330.5
+      positionAbsolute:
+        x: 942
+        y: 330.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 446
+      zIndex: 1
+    - data:
+        code: "\ndef main(articleSections: list):\n    data = articleSections\n  \
+          \  return {\n        \"result\": \"\\n\".join(data)\n    }\n"
+        code_language: python3
+        desc: 将迭代节点输出的数组 Array 转换成字符串 String
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1716786291494'
+          - output
+          variable: articleSections
+      height: 98
+      id: '1716786321875'
+      position:
+        x: 1448
+        y: 330.5
+      positionAbsolute:
+        x: 1448
+        y: 330.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1716786321875.result#}}'
+        desc: ''
+        selected: false
+        title: 结束
+        type: answer
+        variables: []
+      height: 102
+      id: '1716786344896'
+      position:
+        x: 1752
+        y: 330.5
+      positionAbsolute:
+        x: 1752
+        y: 330.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 生成文章
+        isInIteration: true
+        isIterationStart: true
+        iteration_id: '1716786291494'
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: meta-llama/Meta-Llama-3.1-70B-Instruct
+          provider: siliconflow
+        prompt_template:
+        - id: 0c84c8c2-bcde-43be-a392-87cd04b40674
+          role: system
+          text: "You are an expert document writer. Your job is to write long form\
+            \ cohesive content. \n"
+        - id: a661230f-2367-4f35-98d8-d9d608745354
+          role: user
+          text: " Write a section based on the following information: {{#1716786291494.item#}}.\
+            \  \n\n\n<Full outline>\nTake the full outline as a reference when generating\
+            \ full article. \n{{#1716783205923.text#}}"
+        selected: false
+        title: 'LLM '
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      extent: parent
+      height: 126
+      id: '1716805725916'
+      parentId: '1716786291494'
+      position:
+        x: 85.70246020040554
+        y: 85.7024602004056
+      positionAbsolute:
+        x: 1027.7024602004055
+        y: 416.2024602004056
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1001
+    - data:
+        author: Dify
+        desc: ''
+        height: 252
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"input
+          ：","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"user","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"[{\"email\":\"user@example.com\",\"password\":\"ussh\",\"name\":\"John
+          Doe\",\"age\":30,\"gender\":\"male\",\"disease\":{\"type\":\"chest cancer\",\"diagnosis_year\":2018}}]","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 285
+      height: 252
+      id: '1718916743166'
+      position:
+        x: 4.9384328502044355
+        y: 457.3713679495937
+      positionAbsolute:
+        x: 4.9384328502044355
+        y: 457.3713679495937
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 285
+    - data:
+        author: Dify
+        desc: ''
+        height: 427
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":2,"mode":"normal","style":"font-size:
+          16px;","text":"步骤","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":2},{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"使用
+          LLM 节点生成关于副标题和副标题下的内容的 JSON，如果想要更好效果可以在内容中添加上下文和文章结构等。","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"listitem","version":1,"value":1},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"使用
+          Code 节点解析 JSON 传递给迭代节点分段​。","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"listitem","version":1,"value":2}],"direction":"ltr","format":"","indent":0,"type":"list","version":1,"listType":"bullet","start":1,"tag":"ul"},{"children":[],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":2,"mode":"normal","style":"font-size:
+          16px;","text":"JSON 示例","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":2},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"[","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  {","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"section\":
+          \"The Day Everything Changed\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"bullets\":
+          [","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Introduction
+          to the protagonist, Michael, a 30-year-old man diagnosed with a life-altering
+          illness, mirroring the patient''s struggles.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Detailed
+          account of Michael’s reaction to the diagnosis: initial shock, fear, and
+          the emotional toll on him and his family.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Michael’s
+          determination to find hope despite the overwhelming uncertainty and fear.\"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    ]","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  },","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  {","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"section\":
+          \"The Fight Begins: Starting Treatment\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"bullets\":
+          [","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Michael’s
+          first days of treatment: understanding the process, meeting doctors, and
+          the challenges he faces physically and emotionally.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"The
+          role of Michael’s support system, including family and friends, who encourage
+          him to keep going.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"His
+          journey through side effects and setbacks, highlighting his perseverance
+          and resilience as he adjusts to new realities.\"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    ]","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  },","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  {","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"section\":
+          \"Finding Strength in Small Victories\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"bullets\":
+          [","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Michael
+          learns to celebrate small achievements, like finishing a week of treatment
+          or improving in small but meaningful ways.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"How
+          these small wins help rebuild his confidence and offer him glimpses of hope
+          for recovery.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Stories
+          of moments where he feels encouraged and empowered, illustrating the importance
+          of positive reinforcement.\"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    ]","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  },","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  {","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"section\":
+          \"Reflecting on the Journey and Inspiring Others\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    \"bullets\":
+          [","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Michael’s
+          reflections on how his illness changed his perspective on life and relationships.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"How
+          he begins sharing his story with others to inspire them, finding purpose
+          in helping those facing similar struggles.\",","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"      \"Michael’s
+          message of resilience: encouraging readers to stay hopeful, find joy in
+          the present, and believe in the possibility of healing.\"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"    ]","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"  }","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"]","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 558
+      height: 427
+      id: '1718921268873'
+      position:
+        x: 334
+        y: 471.14943653788544
+      positionAbsolute:
+        x: 334
+        y: 471.14943653788544
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 558
+    - data:
+        author: Dify
+        desc: ''
+        height: 127
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"使用
+          \"\\n\".join(data) 把迭代输出的 Array 转换成一个字符串。","type":"text","version":1},{"type":"linebreak","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"使用","type":"text","version":1},{"detail":0,"format":1,"mode":"normal","style":"","text":"模板","type":"text","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"节点
+          ","type":"text","version":1},{"detail":0,"format":16,"mode":"normal","style":"","text":"{{
+          argument | join(\"\\n\") }} 可以达成一样的效果。","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"type":"linebreak","version":1}],"direction":null,"format":"start","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 468
+      height: 127
+      id: '1718921370849'
+      position:
+        x: 1448
+        y: 480
+      positionAbsolute:
+        x: 1448
+        y: 480
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 468
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1716786291494start0
+      parentId: '1716786291494'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 966
+        y: 398.5
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    viewport:
+      x: 258.4727898715571
+      y: -79.89227890288203
+      zoom: 0.8935577428646974
