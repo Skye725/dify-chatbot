@@ -1,0 +1,374 @@
+app:
+  description: Used to evaluate the quality of user-shared stories, assessing the
+    strengths and weaknesses of the stories based on specific criteria and providing
+    suggestions for revisions
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: writting evaluation
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.2
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: ''
+    id: 02416cb3-8d2c-45e8-aa56-71a101522389
+    name: bye
+    value: Your story has been saved. Goodbye!
+    value_type: string
+  - description: ''
+    id: c9991ae9-52eb-4b15-bc7b-8c01492c76a4
+    name: storycreteria
+    value: What are the criteria for measuring whether a story is good enough?
+    value_type: string
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: llm
+      id: 1730738354271-source-1730738411949-target
+      source: '1730738354271'
+      sourceHandle: source
+      target: '1730738411949'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: end
+      id: 1730738411949-source-1730739984589-target
+      source: '1730738411949'
+      sourceHandle: source
+      target: '1730739984589'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1730738332856-source-1730738354271-target
+      source: '1730738332856'
+      sourceHandle: source
+      target: '1730738354271'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: 1730738184291-source-1730738332856-target
+      source: '1730738184291'
+      sourceHandle: source
+      target: '1730738332856'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - document
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          label: stories
+          max_length: 1000
+          options: []
+          required: true
+          type: paragraph
+          variable: stories
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - image
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          label: storystatus
+          max_length: 5
+          options:
+          - Edit
+          - 'Modify '
+          - Save
+          required: true
+          type: select
+          variable: storystatus
+      height: 116
+      id: '1730738184291'
+      position:
+        x: -111.89287805162142
+        y: 392.935384133011
+      positionAbsolute:
+        x: -111.89287805162142
+        y: 392.935384133011
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - c93e57a7-b113-4a71-a2c8-088cb2e5c3bf
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: BAAI/bge-reranker-v2-m3
+            provider: siliconflow
+          score_threshold: null
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: BAAI/bge-large-en-v1.5
+              embedding_provider_name: siliconflow
+              vector_weight: 0.7
+        query_variable_selector:
+        - env
+        - storycreteria
+        retrieval_mode: multiple
+        selected: false
+        title: 知识检索
+        type: knowledge-retrieval
+      height: 92
+      id: '1730738332856'
+      position:
+        x: 342.42316818357494
+        y: 405.8189749483495
+      positionAbsolute:
+        x: 342.42316818357494
+        y: 405.8189749483495
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1730738332856'
+          - result
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: 3b212827-38a1-4991-903b-851ed521a8b1
+          role: system
+          text: "<contex>\n{{#context#}}\n</contex>\n<instruction>\n    <instructions>\n\
+            \        1. Read the provided context to understand the core content about\
+            \ how to share one's story in the book.\n        2. Based on the context,\
+            \ identify and summarize the criteria for measuring the quality of a story.\n\
+            \        3. List these criteria, with a brief explanation after each criterion\
+            \ to clarify why it is important.\n        4. Ensure the output is clear,\
+            \ concise, and logically coherent.\n        5. Do not include any XML\
+            \ tags in the output.\n    </instructions>\n    \n    <examples>\n   \
+            \     <example>\n            <input>The context mentions authenticity,\
+            \ emotional resonance, and structural completeness as important criteria\
+            \ for sharing a story.</input>\n            <output>1. Authenticity: The\
+            \ story must be believable and allow the audience to sense its authenticity.<br/>\n\
+            \                    2. Emotional resonance: The story should evoke an\
+            \ emotional response from the audience, allowing them to connect with\
+            \ the characters or situations.<br/>\n                    3. Structural\
+            \ completeness: A good story should have a clear beginning, development,\
+            \ and ending, helping the audience follow the narrative.</output>\n  \
+            \      </example>\n        <example>\n            <input>The book emphasizes\
+            \ the importance of a story's appeal, educational value, and cultural\
+            \ background.</input>\n            <output>1. Appeal: The story needs\
+            \ to capture the audience's attention and maintain their interest.<br/>\n\
+            \                    2. Educational value: The story should convey some\
+            \ educational insight or lesson, allowing the audience to gain knowledge\
+            \ while enjoying the story.<br/>\n                    3. Cultural background:\
+            \ The cultural background of the story helps the audience better understand\
+            \ its deeper meaning and emotions.</output>\n        </example>\n    \
+            \    <example>\n            <input>The context mentions the uniqueness,\
+            \ narrative style, and plot development as key factors for evaluating\
+            \ story quality.</input>\n            <output>1. Uniqueness: The story\
+            \ should have a unique perspective or theme, making it stand out among\
+            \ other stories.<br/>\n                    2. Narrative style: The narrator's\
+            \ style should match the story's content, enhancing its expressiveness.<br/>\n\
+            \                    3. Plot development: The plot should develop logically\
+            \ and be engaging, ensuring a sense of pacing and cohesion.</output>\n\
+            \        </example>\n    </examples>\n</instruction>\n"
+        selected: false
+        title: LLM(crteteria generate)
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: '1730738354271'
+      position:
+        x: 724.2069174738009
+        y: 405.8189749483495
+      positionAbsolute:
+        x: 724.2069174738009
+        y: 405.8189749483495
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1730738184291'
+          - stories
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: 39998ec6-8b5d-4d07-8ee0-9a177e14e3a9
+          role: system
+          text: "<instruction>\n    <instructions>\n        1. First, the user is\
+            \ telling their own story, with the protagonist being themselves. Carefully\
+            \ read the provided story text {{#1730738184291.stories#}} to ensure you\
+            \ understand its theme, plot, and characters.\n        2. Evaluate the\
+            \ quality of the story based on the writing standards {{#1730738354271.text#}},\
+            \ paying attention to aspects such as story structure, character development,\
+            \ emotional expression, and language use.\n        3. Analyze the strengths\
+            \ of the story, identifying which parts are well-executed and worthy of\
+            \ praise.\n        4. At the same time, identify weaknesses in the story,\
+            \ pointing out areas that need improvement and providing specific revision\
+            \ suggestions.\n        5. When giving feedback, maintain a friendly and\
+            \ encouraging tone to ensure the user feels supported and motivated.\n\
+            \        6. Finally, integrate your analysis and suggestions into a cohesive\
+            \ piece of feedback to help the user enhance the quality of their story.\n\
+            \        7. Ensure the output does not contain any XML tags.\n    </instructions>\n\
+            </instruction>\n"
+        selected: false
+        title: LLM 2(writting evaluate)
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: '1730738411949'
+      position:
+        x: 1069.6824695881098
+        y: 405.8189749483495
+      positionAbsolute:
+        x: 1069.6824695881098
+        y: 405.8189749483495
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1730738411949'
+          - text
+          variable: output
+        selected: false
+        title: 结束
+        type: end
+      height: 90
+      id: '1730739984589'
+      position:
+        x: 1357.3051399873232
+        y: 405.8189749483495
+      positionAbsolute:
+        x: 1357.3051399873232
+        y: 405.8189749483495
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: Dify
+        desc: ''
+        height: 204
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"I
+          am MIke, I am 23 years old. When I was diagnosed with chest cancer, I felt
+          despair and embarrassment, partly because I was afraid of dying and partly
+          because breast cancer is relatively rare in men and I didn''t know how to
+          mention that I had such a disease","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 302
+      height: 204
+      id: '1730741557583'
+      position:
+        x: 46.85627412874504
+        y: -11.391805986086325
+      positionAbsolute:
+        x: 46.85627412874504
+        y: -11.391805986086325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 302
+    viewport:
+      x: 337.43225845766324
+      y: -75.32521146776912
+      zoom: 0.8705505632961249
